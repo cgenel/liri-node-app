@@ -57,3 +57,38 @@ var getMeSpotify = function(songName) {
   );
 };
 
+// create a function using axios to pull data from the bandsInTown api
+var getMyBands = function(artist) {
+  var queryURL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+
+  axios.get(queryURL).then(
+    function(response) {
+      var jsonData = response.data;
+
+      if (!jsonData.length) {
+        console.log("No results found for " + artist);
+        return;
+      }
+      
+      console.log("Upcoming concerts for " + artist + ":");
+
+      for (var i = 0; i < jsonData.length; i++) {
+        var show = jsonData[i];
+
+        // Print data about each concert
+        // If a concert doesn't have a region, display the country instead
+        // Use moment to format the date
+        console.log(
+          show.venue.city +
+          "," +
+          (show.venue.region || show.venue.country) +
+          " at " +
+          show.venue.name +
+          " " +
+          moment(show.datetime).format("MM/DD/YYYY")
+        );
+      }
+    }
+  );
+};
+
