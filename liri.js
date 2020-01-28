@@ -69,7 +69,7 @@ var getMyBands = function(artist) {
         console.log("No results found for " + artist);
         return;
       }
-      
+
       console.log("Upcoming concerts for " + artist + ":");
 
       for (var i = 0; i < jsonData.length; i++) {
@@ -80,12 +80,12 @@ var getMyBands = function(artist) {
         // Use moment to format the date
         console.log(
           show.venue.city +
-          "," +
-          (show.venue.region || show.venue.country) +
-          " at " +
-          show.venue.name +
-          " " +
-          moment(show.datetime).format("MM/DD/YYYY")
+            "," +
+            (show.venue.region || show.venue.country) +
+            " at " +
+            show.venue.name +
+            " " +
+            moment(show.datetime).format("MM/DD/YYYY")
         );
       }
     }
@@ -108,20 +108,20 @@ var getMeMovie = function(movieName) {
 
       console.log("Title: " + jsonData.Title);
       console.log("Year: " + jsonData.Year);
-      console.log("Rated : " + jsonData.Rated);
+      console.log("Rated: " + jsonData.Rated);
       console.log("IMDB Rating: " + jsonData.imdbRating);
       console.log("Country: " + jsonData.Country);
-      console.log("Language: " + jasonData.Language);
+      console.log("Language: " + jsonData.Language);
       console.log("Plot: " + jsonData.Plot);
       console.log("Actors: " + jsonData.Actors);
-      console.log("Rotten Tomatoes Rating: " + jasonData.Ratings[1].Value);
+      console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[1].Value);
     }
   );
 };
 
 // Function for running a command based on text file
 var doWhatItSays = function() {
-  fs.readFile("random.txt", "utf8", function(errpr, data) {
+  fs.readFile("random.txt", "utf8", function(error, data) {
     console.log(data);
 
     var dataArr = data.split(",");
@@ -146,10 +146,18 @@ var pick = function(caseData, functionData) {
   case "movie-this":
     getMeMovie(functionData);
     break;
-  case "do-what-says":
+  case "do-what-it-says":
     doWhatItSays();
     break;
   default:
-    console.log("Liri doesn't know that");
+    console.log("LIRI doesn't know that");
   }
 };
+
+// Function which takes in command line arguments and executes correct function accordingly
+var runThis = function(argOne, argTwo) {
+  pick(argOne, argTwo);
+};
+
+
+runThis(process.argv[2], process.argv.slice(3).join(" "));
