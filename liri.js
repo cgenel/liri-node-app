@@ -133,3 +133,23 @@ var doWhatItSays = function() {
     }
   });
 };
+
+// function for determining which command is executed
+var pick = function(caseData, functionData) {
+  switch (caseData) {
+  case "concert-this":
+    getMyBands(functionData);
+    break;
+  case "spotify-this-song":
+    getMeSpotify(functionData);
+    break;
+  case "movie-this":
+    getMeMovie(functionData);
+    break;
+  case "do-what-says":
+    doWhatItSays();
+    break;
+  default:
+    console.log("Liri doesn't know that");
+  }
+};
