@@ -18,10 +18,23 @@ var fs = require("fs");
 // Initialize the spotify API client using our client id and secret
 var spotify = new Spotify(keys.spotify);
 
+// Writes to the log.txt file
+var writeToLog = function(data) {
+  // Append the JSON data and add a newline character to the end of the log.txt file
+  fs.appendFile("log.txt", JSON.stringify(data) + "\n", function(err) {
+    if (err) {
+      return console.log(err);
+    }
+
+    console.log("log.txt was updated!");
+  });
+};
+
 // Helper function that gets the artist name
 var getArtistNames = function(artist) {
   return artist.name;
 };
+
 
 // Function for running a Spotify search
 var getMeSpotify = function(songName) {
@@ -30,31 +43,27 @@ var getMeSpotify = function(songName) {
   }
 
   // when searching spotify for the song name "track"
-  spotify.search(
-    {
-      type: "track",
-      query: songName
-    },
-    function(err, data) {
-      if (err) {
-        console.log("Error occurred: " + err);
-        return;
-      }
-
-      // songs variable for collecting the data
-      var songs = data.tracks.items;
-
-      // for-loop to display all songs with the title entered
-      for (var i = 0; i < songs.length; i++) {
-        console.log(i);
-        console.log("artist(s): " + songs[i].artists.map(getArtistNames));
-        console.log("song name: " + songs[i].name);
-        console.log("preview song: " + songs[i].preview_url);
-        console.log("album: " + songs[i].album.name);
-        console.log("-----------------------------------");
-      }
+  spotify.search({ type: "track", query: songName }, function(err, data) {
+    if (err) {
+      console.log("Error occurred: " + err);
+      return;
     }
-  );
+
+    var songs = data.tracks.items;
+    var data = [];
+
+    for (var i = 0; i < songs.length; i++) {
+      data.push({
+        "artist(s)": songs[i].artists.map(getArtistNames),
+        "song name: ": songs[i].name,
+        "preview song: ": songs[i].preview_url,
+        "album: ": songs[i].album.name
+      });
+    }
+
+    console.log(data);
+    writeToLog(data);
+  });
 };
 
 // create a function using axios to pull data from the bandsInTown api
@@ -70,15 +79,17 @@ var getMyBands = function(artist) {
         return;
       }
 
-      console.log("Upcoming concerts for " + artist + ":");
+      var logData = [];
+
+      logData.push("Upcoming concerts for " + artist + ":");
 
       for (var i = 0; i < jsonData.length; i++) {
         var show = jsonData[i];
 
-        // Print data about each concert
+        // Push each line of concert data to `logData`
         // If a concert doesn't have a region, display the country instead
         // Use moment to format the date
-        console.log(
+        logData.push(
           show.venue.city +
             "," +
             (show.venue.region || show.venue.country) +
@@ -88,6 +99,10 @@ var getMyBands = function(artist) {
             moment(show.datetime).format("MM/DD/YYYY")
         );
       }
+
+      // Print and write the concert data as a string joined by a newline character
+      console.log(logData.join("\n"));
+      writeToLog(logData.join("\n"));
     }
   );
 };
@@ -99,22 +114,26 @@ var getMeMovie = function(movieName) {
   }
 
   // use axios to pull the data from ombd api using the trilogy api 
-  var urlHit =
-  "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=trilogy";
+  var urlHit = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=trilogy";
 
   axios.get(urlHit).then(
     function(response) {
       var jsonData = response.data;
 
-      console.log("Title: " + jsonData.Title);
-      console.log("Year: " + jsonData.Year);
-      console.log("Rated: " + jsonData.Rated);
-      console.log("IMDB Rating: " + jsonData.imdbRating);
-      console.log("Country: " + jsonData.Country);
-      console.log("Language: " + jsonData.Language);
-      console.log("Plot: " + jsonData.Plot);
-      console.log("Actors: " + jsonData.Actors);
-      console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[1].Value);
+      var data = {
+        "Title:": jsonData.Title,
+        "Year:": jsonData.Year,
+        "Rated:": jsonData.Rated,
+        "IMDB Rating:": jsonData.imdbRating,
+        "Country:": jsonData.Country,
+        "Language:": jsonData.Language,
+        "Plot:": jsonData.Plot,
+        "Actors:": jsonData.Actors,
+        "Rotten Tomatoes Rating:": jsonData.Ratings[1].Value
+      };
+
+      console.log(data);
+      writeToLog(data);
     }
   );
 };
@@ -128,7 +147,8 @@ var doWhatItSays = function() {
 
     if (dataArr.length === 2) {
       pick(dataArr[0], dataArr[1]);
-    } else if (dataArr.length === 1) {
+    }
+    else if (dataArr.length === 1) {
       pick(dataArr[0]);
     }
   });
