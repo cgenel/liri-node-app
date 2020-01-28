@@ -92,3 +92,10 @@ var getMyBands = function(artist) {
   );
 };
 
+// create function for running a movie search
+var getMeMovie = function(movieName) {
+  if (movieName === undefined) {
+    movieName = "Mr Nobody";
+  }
+}
+
